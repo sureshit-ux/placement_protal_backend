@@ -9,7 +9,7 @@ public class PasswordGenerator {
         BCryptPasswordEncoder encoder =
                 new BCryptPasswordEncoder();
 
-        String password = "virat123@";
+        String password = "password123@";
 
         String encodedPassword =
                 encoder.encode(password);

@@ -1,5 +1,5 @@
 package com.college.placement.service;
-
+import com.college.placement.repository.CompanyRepository;
 import com.college.placement.dto.request.StudentProfileUpdateRequest;
 import com.college.placement.dto.response.BranchResponse;
 import com.college.placement.dto.response.CompanyResponse;
@@ -13,7 +13,6 @@ import com.college.placement.entity.User;
 import com.college.placement.exception.BadRequestException;
 import com.college.placement.exception.ResourceNotFoundException;
 import com.college.placement.exception.UnauthorizedException;
-import com.college.placement.repository.CompanyRepository;
 import com.college.placement.repository.SkillRepository;
 import com.college.placement.repository.StudentProfileRepository;
 import com.college.placement.repository.UserRepository;

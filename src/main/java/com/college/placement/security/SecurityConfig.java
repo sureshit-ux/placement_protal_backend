@@ -75,7 +75,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/certificates/my-certificates").hasAuthority("ROLE_STUDENT")
                 .requestMatchers(HttpMethod.PUT, "/api/certificates/*/status").hasAnyAuthority("ROLE_COORDINATOR", "ROLE_ADMIN")
                 
-                .requestMatchers(HttpMethod.GET, "/api/companies").hasAnyAuthority("ROLE_STUDENT", "ROLE_COORDINATOR", "ROLE_ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/companies/**").hasAnyAuthority("ROLE_STUDENT", "ROLE_COORDINATOR", "ROLE_ADMIN")
                 .requestMatchers(HttpMethod.POST, "/api/companies").hasAnyAuthority("ROLE_COORDINATOR", "ROLE_ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/companies/**").hasAnyAuthority("ROLE_COORDINATOR", "ROLE_ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/companies/**").hasAnyAuthority("ROLE_COORDINATOR", "ROLE_ADMIN")
