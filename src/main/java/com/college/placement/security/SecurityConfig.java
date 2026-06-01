@@ -85,8 +85,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/applications/my-applications").hasAuthority("ROLE_STUDENT")
                 .requestMatchers(HttpMethod.GET, "/api/applications").hasAnyAuthority("ROLE_COORDINATOR", "ROLE_ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/applications/*/status").hasAnyAuthority("ROLE_COORDINATOR", "ROLE_ADMIN")
-                
-                .requestMatchers(HttpMethod.GET, "/api/topics", "/api/sessions", "/api/news", "/api/notifications").hasAnyAuthority("ROLE_STUDENT", "ROLE_COORDINATOR", "ROLE_ADMIN")
+
+                    .requestMatchers(HttpMethod.GET, "/api/topics/**", "/api/sessions/**", "/api/news/**", "/api/notifications/**").hasAnyAuthority("ROLE_STUDENT", "ROLE_COORDINATOR", "ROLE_ADMIN")
                 .requestMatchers(HttpMethod.POST, "/api/topics", "/api/sessions", "/api/news").hasAnyAuthority("ROLE_COORDINATOR", "ROLE_ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/topics/**", "/api/sessions/**", "/api/news/**").hasAnyAuthority("ROLE_COORDINATOR", "ROLE_ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/topics/**", "/api/sessions/**", "/api/news/**").hasAnyAuthority("ROLE_COORDINATOR", "ROLE_ADMIN")
