@@ -9,17 +9,47 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface TopicRepository extends JpaRepository<Topic, Long> {
-    
-    // Find all global topics
+
+    // ============================================================
+    // VALIDATIONS
+    // ============================================================
+
+    boolean existsByTitleIgnoreCase(String title);
+
+    Optional<Topic> findByTitleIgnoreCase(String title);
+
+    // ============================================================
+    // GLOBAL TOPICS
+    // ============================================================
+
     Page<Topic> findByIsGlobalTrue(Pageable pageable);
-    
-    // Find topics applicable to a specific branch (including global topics)
-    @Query("SELECT DISTINCT t FROM Topic t LEFT JOIN t.applicableBranches b " +
-           "WHERE t.isGlobal = true OR b = :branch")
-    Page<Topic> findTopicsForBranch(@Param("branch") Branch branch, Pageable pageable);
-    
-    // Find topics by category
-    Page<Topic> findByCategory(String category, Pageable pageable);
+
+    // ============================================================
+    // BRANCH SPECIFIC TOPICS
+    // ============================================================
+
+    @Query("""
+           SELECT DISTINCT t
+           FROM Topic t
+           LEFT JOIN t.applicableBranches b
+           WHERE t.isGlobal = true
+              OR b = :branch
+           """)
+    Page<Topic> findTopicsForBranch(
+            @Param("branch") Branch branch,
+            Pageable pageable
+    );
+
+    // ============================================================
+    // CATEGORY FILTER
+    // ============================================================
+
+    Page<Topic> findByCategoryIgnoreCase(
+            String category,
+            Pageable pageable
+    );
 }
