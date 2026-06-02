@@ -22,6 +22,6 @@ public class CertificateRequest {
     @NotBlank(message = "Certificate URL is required")
     private String certificateUrl;
 
-    @NotEmpty(message = "At least one skill ID is required")
-    private Set<Long> skillIds;
+    @NotEmpty(message = "At least one skill is required")
+    private Set<String> skillNames;
 }
