@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * ============================================================
+ * =========================================================
  * AuthController — Phase 5B: Authentication Controller Layer
  * ============================================================
  *
@@ -250,4 +250,20 @@ public class AuthController {
 
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<Void>> logout() {
+
+        return ResponseEntity.ok(
+                ApiResponse.<Void>builder()
+                        .success(true)
+                        .message("Logged out successfully.")
+                        .data(null)
+                        .build()
+        );
+    }
+
+
+
+
 }

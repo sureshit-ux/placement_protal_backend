@@ -1,5 +1,5 @@
 package com.college.placement.service;
-
+import com.college.placement.service.email.EmailService;
 import com.college.placement.dto.request.ForgotPasswordRequest;
 import com.college.placement.dto.request.LoginRequest;
 import com.college.placement.dto.request.RefreshTokenRequest;
@@ -26,6 +26,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.college.placement.entity.PasswordResetToken;
+import com.college.placement.repository.PasswordResetTokenRepository;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * ============================================================
@@ -68,15 +73,17 @@ public class AuthService {
     private final JwtTokenProvider      jwtTokenProvider;
    private final PasswordEncoder   passwordEncoder;
     private final UserRepository        userRepository;
-
-    public AuthService(AuthenticationManager authenticationManager,
-                       JwtTokenProvider jwtTokenProvider,
-                       PasswordEncoder passwordEncoder,
-                       UserRepository userRepository) {
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
+    private final EmailService emailService;
+    public AuthService(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, PasswordEncoder passwordEncoder,
+                       UserRepository userRepository,PasswordResetTokenRepository passwordResetTokenRepository,EmailService emailService)
+    {
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider      = jwtTokenProvider;
         this.passwordEncoder       = passwordEncoder;
         this.userRepository        = userRepository;
+        this.passwordResetTokenRepository = passwordResetTokenRepository;
+        this.emailService=emailService;
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -274,30 +281,50 @@ public class AuthService {
      * @param request  ForgotPasswordRequest containing the user's email
      * @return         ApiResponse with a generic acknowledgment message
      */
+    @Transactional
     public ApiResponse<Void> forgotPassword(ForgotPasswordRequest request) {
+
         logger.info("Forgot password request received for email: {}", request.getEmail());
 
-        // Verify user exists internally (for logging/audit purposes),
-        // but do NOT reveal in the response whether the email was found.
-        userRepository.findByEmail(request.getEmail())
-                .ifPresentOrElse(
-                        user -> logger.info("Forgot password: user found for email: {} | ID: {}",
-                                request.getEmail(), user.getId()),
-                        () -> logger.warn("Forgot password: no user found for email: {} (not disclosed to client)",
-                                request.getEmail())
-                );
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElse(null);
 
-        // TODO (Future Phase):
-        //  1. Generate a secure OTP / signed reset token
-        //  2. Save it to PasswordResetToken entity with expiry
-        //  3. Trigger EmailService to send the reset link/OTP
+        // Security: email exists ani reveal cheyyakudadhu
+        if (user == null) {
+            return ApiResponse.<Void>builder()
+                    .success(true)
+                    .message("If this email is registered, a password reset link has been sent.")
+                    .data(null)
+                    .build();
+        }
 
-        logger.info("Forgot password placeholder executed for email: {}", request.getEmail());
+        // Old tokens remove
+        passwordResetTokenRepository.deleteByUser(user);
 
-        // Generic response — does not confirm whether email is registered
+        // Generate reset code
+        String code = generateResetCode();
+
+        PasswordResetToken token = PasswordResetToken.builder()
+                .code(code)
+                .user(user)
+                .expiryDate(LocalDateTime.now().plusMinutes(15))
+                .used(false)
+                .build();
+
+        passwordResetTokenRepository.save(token);
+
+        logger.info("Password reset code generated for user ID: {}", user.getId());
+
+        // TODO:
+        // EmailService.sendPasswordResetCode(user.getEmail(), code);
+
+        emailService.sendPasswordResetEmail(user.getEmail(), code);
+
+
+
         return ApiResponse.<Void>builder()
                 .success(true)
-                .message("If this email is registered, a password reset link has been sent.")
+                .message("If this email is registered, a password reset code has been sent.")
                 .data(null)
                 .build();
     }
@@ -334,27 +361,30 @@ public class AuthService {
      */
     @Transactional
     public ApiResponse<Void> resetPassword(ResetPasswordRequest request) {
-        logger.info("Reset password request received with code: [REDACTED]");
 
-        // Defensive guard: ensure the code and new password are present
-        if (request.getCode() == null || request.getCode().isBlank()) {
-            throw new BadRequestException("Verification code is required.");
+        logger.info("Reset password request received.");
+
+        PasswordResetToken token = passwordResetTokenRepository
+                .findByCodeAndUsedFalse(request.getCode())
+                .orElseThrow(() ->
+                        new BadRequestException("Invalid verification code."));
+
+        if (token.getExpiryDate().isBefore(LocalDateTime.now())) {
+            throw new BadRequestException("Verification code has expired.");
         }
-        if (request.getNewPassword() == null || request.getNewPassword().isBlank()) {
-            throw new BadRequestException("New password is required.");
-        }
 
-        // TODO (Future Phase):
-        //  1. Look up PasswordResetToken by request.getCode()
-        //  2. Validate token is not expired
-        //  3. Load the associated User
-        //  4. Encode and save new password:
-        //       user.setPassword(passwordEncoder.encode(request.getNewPassword()));
-        //       userRepository.save(user);
-        //  5. Delete/invalidate the used token
-        //  6. Optionally revoke active JWT tokens for the user
+        User user = token.getUser();
 
-        logger.info("Reset password placeholder executed successfully.");
+        user.setPassword(
+                passwordEncoder.encode(request.getNewPassword())
+        );
+
+        userRepository.save(user);
+
+        token.setUsed(true);
+        passwordResetTokenRepository.save(token);
+
+        logger.info("Password reset successful for user ID: {}", user.getId());
 
         return ApiResponse.<Void>builder()
                 .success(true)
@@ -363,9 +393,32 @@ public class AuthService {
                 .build();
     }
 
+
+
+    private String generateResetCode() {
+        return UUID.randomUUID()
+                .toString()
+                .replace("-", "")
+                .substring(0, 8)
+                .toUpperCase();
+    }
+
+
+
+
+
+
+
+
+
     // ═══════════════════════════════════════════════════════════════════════════
     // PRIVATE HELPERS
     // ═══════════════════════════════════════════════════════════════════════════
+
+
+
+
+
 
     /**
      * Maps a User entity to a UserResponse DTO.

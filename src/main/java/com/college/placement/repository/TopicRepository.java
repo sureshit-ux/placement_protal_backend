@@ -52,4 +52,10 @@ public interface TopicRepository extends JpaRepository<Topic, Long> {
             String category,
             Pageable pageable
     );
+
+
+    long countByIsGlobalTrue();
+
+    @Query("SELECT COUNT(DISTINCT t) FROM Topic t LEFT JOIN t.applicableBranches b WHERE t.isGlobal = false AND b = :branch")
+    long countTopicsForBranch(@Param("branch") Branch branch);
 }

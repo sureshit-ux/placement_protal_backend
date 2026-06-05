@@ -18,4 +18,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     // Find unread direct notifications for a user
     @Query("SELECT n FROM Notification n WHERE n.recipient.id = :userId AND n.isRead = false")
     Page<Notification> findUnreadNotificationsForUser(@Param("userId") Long userId, Pageable pageable);
+    long countByRecipientIdAndIsReadFalse(Long userId);
+
+
 }

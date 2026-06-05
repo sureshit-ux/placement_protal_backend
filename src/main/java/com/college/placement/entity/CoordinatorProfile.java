@@ -16,14 +16,17 @@ import lombok.*;
 @Builder
 @ToString
 @EqualsAndHashCode(of = "id")
-public class CoordinatorProfile {
+public class CoordinatorProfile
+{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    
     @JoinColumn(name = "user_id", nullable = false, unique = true)
+
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -45,7 +45,7 @@ public class Certificate {
     private String certificateUrl;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 30)
+    @Column(nullable = false, length = 15)
     @Builder.Default
     private CertificateStatus status = CertificateStatus.PENDING;
 
@@ -58,3 +58,4 @@ public class Certificate {
     @Builder.Default
     private Set<Skill> skillsLearned = new HashSet<>();
 }
+

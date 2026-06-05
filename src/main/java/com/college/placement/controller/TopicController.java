@@ -106,7 +106,7 @@ public class TopicController {
     }
 
     // ============================================================
-    // 4. GET TOPIC BY ID
+    // 4. GET  TOPIC BY ID
     // ============================================================
 
     /**
@@ -126,11 +126,9 @@ public class TopicController {
         TopicResponse response = topicService.getTopicById(id);
         return ResponseEntity.ok(response);
     }
-
     // ============================================================
     // 5. GET ALL TOPICS (PAGINATED)
     // ============================================================
-
     /**
      * Retrieves all topics in the system with pagination and sorting support.
      *
@@ -191,6 +189,19 @@ public class TopicController {
      * @param pageable pagination and sorting configuration (default: page=0, size=10, sort by createdAt DESC)
      * @return {@code 200 OK} with a paginated list of {@link TopicResponse} applicable to the branch
      */
+    /*@getmapping("/topic/")
+    @getmapping
+    public string getTopic(@reqestparan Integer branchId,@requestparan String catagery)
+    if(branc)
+    {
+    }
+    elseif(catagery)
+    {}
+    else
+    {
+    }
+     */
+
     @GetMapping("/branch/{branchId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR', 'STUDENT')")
     public ResponseEntity<Page<TopicResponse>> getTopicsForBranch(
@@ -199,6 +210,7 @@ public class TopicController {
             Pageable pageable) {
 
         log.info("REST request to fetch topics for branch ID: {}", branchId);
+        //if(branchID)
         Page<TopicResponse> response = topicService.getTopicsForBranch(branchId, pageable);
         return ResponseEntity.ok(response);
     }
@@ -225,6 +237,7 @@ public class TopicController {
             Pageable pageable) {
 
         log.info("REST request to fetch topics by category: '{}'", category);
+        //elseif(category)
         Page<TopicResponse> response = topicService.getTopicsByCategory(category, pageable);
         return ResponseEntity.ok(response);
     }

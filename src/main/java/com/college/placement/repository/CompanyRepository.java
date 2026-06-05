@@ -166,4 +166,13 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
             @Param("cgpa") Double cgpa,
             Pageable pageable
     );
+    // ============================================================
+// DASHBOARD STATISTICS
+// ============================================================
+
+    @Query("SELECT COUNT(c) FROM Company c WHERE c.applyDeadline >= :now")
+    long countActiveCompanies(@Param("now") LocalDateTime now);
+
+    @Query("SELECT COUNT(c) FROM Company c WHERE c.driveDate >= :now")
+    long countUpcomingCompanies(@Param("now") LocalDateTime now);
 }

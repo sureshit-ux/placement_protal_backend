@@ -1,5 +1,5 @@
 package com.college.placement.repository;
-
+import com.college.placement.entity.Branch;
 import com.college.placement.entity.ApplicationStatus;
 import com.college.placement.entity.PlacementApplication;
 import org.springframework.data.domain.Page;
@@ -23,4 +23,42 @@ public interface PlacementApplicationRepository extends JpaRepository<PlacementA
     // Get recruitment statistics for a company (grouped by status)
     @Query("SELECT p.status, COUNT(p) FROM PlacementApplication p WHERE p.company.id = :companyId GROUP BY p.status")
     List<Object[]> getApplicationStatsForCompany(@Param("companyId") Long companyId);
+
+
+    // ============================================================
+// DASHBOARD STATISTICS
+// ============================================================
+
+    @Query("""
+       SELECT COUNT(pa)
+       FROM PlacementApplication pa
+       WHERE pa.student.branch = :branch
+       """)
+    long countApplicationsByBranch(
+            @Param("branch") Branch branch
+    );
+
+    @Query("""
+       SELECT COUNT(pa)
+       FROM PlacementApplication pa
+       WHERE pa.student.branch = :branch
+       AND pa.status = :status
+       """)
+    long countApplicationsByBranchAndStatus(
+            @Param("branch") Branch branch,
+            @Param("status") ApplicationStatus status
+    );
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
