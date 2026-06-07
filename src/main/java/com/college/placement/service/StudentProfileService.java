@@ -16,7 +16,7 @@ import com.college.placement.exception.UnauthorizedException;
 import com.college.placement.repository.SkillRepository;
 import com.college.placement.repository.StudentProfileRepository;
 import com.college.placement.repository.UserRepository;
-
+import com.college.placement.dto.response.CompanyListResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -446,7 +446,7 @@ public class StudentProfileService {
      * @throws ResourceNotFoundException if the user or profile does not exist
      */
     @Transactional(readOnly = true)
-    public Page<CompanyResponse> getEligibleCompanies(Pageable pageable) {
+    public Page<CompanyListResponse> getEligibleCompanies(Pageable pageable) {
         // ── Step 1: Resolve user and load profile ─────────────────────────────
         String email = resolveCurrentUserEmail();
         logger.info("Fetching eligible companies for user: {}", email);
@@ -470,7 +470,7 @@ public class StudentProfileService {
                 eligibleCompanies.getTotalElements(), user.getId());
 
         // ── Step 3: Map to response DTOs ──────────────────────────────────────
-        return eligibleCompanies.map(this::mapToCompanyResponse);
+        return eligibleCompanies.map(this::mapToListResponse);
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -591,6 +591,31 @@ public class StudentProfileService {
                 .build();
     }
 
+    // ═══════════════════════════════════════════════════════════════════════════
+    // G. promte all students
+    // ═══════════════════════════════════════════════════════════════════════════
+
+
+
+    @Transactional
+    public void promoteAllStudents() {
+
+        List<StudentProfile> students =
+                studentProfileRepository.findByYearLessThan(4);
+
+        students.forEach(student ->
+                student.setYear(student.getYear() + 1));
+
+        studentProfileRepository.saveAll(students);
+    }
+
+
+
+
+
+
+
+
     /**
      * Maps a Company entity to a CompanyResponse DTO.
      *
@@ -629,4 +654,16 @@ public class StudentProfileService {
                 .allowedYears(company.getAllowedYears())
                 .build();
     }
+    private CompanyListResponse mapToListResponse(Company company) {
+
+        return CompanyListResponse.builder()
+                .id(company.getId())
+                .companyName(company.getCompanyName())
+                .roleOffered(company.getRoleOffered())
+                .packageOffered(company.getPackageOffered())
+                .applyDeadline(company.getApplyDeadline())
+                .build();
+    }
+
+
 }

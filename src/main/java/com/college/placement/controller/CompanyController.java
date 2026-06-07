@@ -1,5 +1,5 @@
 package com.college.placement.controller;
-
+import com.college.placement.dto.response.CompanyListResponse;
 import com.college.placement.dto.request.CompanyRequest;
 import com.college.placement.dto.response.CompanyResponse;
 import com.college.placement.exception.BadRequestException;
@@ -124,7 +124,7 @@ public class CompanyController {
         log.info("REST request to fetch all companies. page={}, size={}, sortBy={}, sortDir={}", page, size, sortBy, sortDir);
 
         validatePagination(page, size);
-        validateSortField(sortBy, ALLOWED_SORT_FIELDS);
+        validateSortField(sortBy);
 
         Sort.Direction direction = sortDir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
@@ -152,7 +152,7 @@ public class CompanyController {
         log.info("REST request to fetch upcoming drives. page={}, size={}, sortBy={}, sortDir={}", page, size, sortBy, sortDir);
 
         validatePagination(page, size);
-        validateSortField(sortBy, ALLOWED_SORT_FIELDS);
+        validateSortField(sortBy);
 
         Sort.Direction direction = sortDir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
@@ -172,20 +172,25 @@ public class CompanyController {
      */
     @GetMapping("/active")
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR', 'STUDENT')")
-    public ResponseEntity<Page<CompanyResponse>> getActiveDrives(
+    public ResponseEntity<Page<CompanyListResponse>> getActiveDrives(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "10") int size,
             @RequestParam(name = "sortBy", defaultValue = "applyDeadline") String sortBy,
             @RequestParam(name = "sortDir", defaultValue = "asc") String sortDir) {
-        log.info("REST request to fetch active drives. page={}, size={}, sortBy={}, sortDir={}", page, size, sortBy, sortDir);
+
+        log.info("REST request to fetch active drives. page={}, size={}, sortBy={}, sortDir={}",
+                page, size, sortBy, sortDir);
 
         validatePagination(page, size);
-        validateSortField(sortBy, ALLOWED_SORT_FIELDS);
+        validateSortField(sortBy);
 
-        Sort.Direction direction = sortDir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Sort.Direction direction =
+                sortDir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
-        Page<CompanyResponse> response = companyService.getActiveDrives(pageable);
+        Page<CompanyListResponse> response = companyService.getActiveDrives(pageable);
+
         return ResponseEntity.ok(response);
     }
 
@@ -208,7 +213,7 @@ public class CompanyController {
         log.info("REST request to fetch expired drives. page={}, size={}, sortBy={}, sortDir={}", page, size, sortBy, sortDir);
 
         validatePagination(page, size);
-        validateSortField(sortBy, ALLOWED_SORT_FIELDS);
+        validateSortField(sortBy);
 
         Sort.Direction direction = sortDir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
@@ -247,7 +252,7 @@ public class CompanyController {
                 companyName, roleOffered, branchId, year, cgpa, page, size);
 
         validatePagination(page, size);
-        validateSortField(sortBy, ALLOWED_SORT_FIELDS);
+        validateSortField(sortBy);
 
         Sort.Direction direction = sortDir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
@@ -280,12 +285,11 @@ public class CompanyController {
      * Validates sorting field against an allowed whitelist to prevent exceptions
      * and potential exposure of internal fields.
      *
-     * @param sortBy        the requested sort field
-     * @param allowedFields whitelist of allowed fields
+     * @param sortBy the requested sort field
      * @throws BadRequestException if the field is not allowed
      */
-    private void validateSortField(String sortBy, List<String> allowedFields) {
-        if (!allowedFields.contains(sortBy)) {
+    private void validateSortField(String sortBy) {
+        if (!CompanyController.ALLOWED_SORT_FIELDS.contains(sortBy)) {
             throw new BadRequestException("Invalid sort field: " + sortBy);
         }
     }

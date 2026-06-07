@@ -1,5 +1,5 @@
 package com.college.placement.controller;
-
+import com.college.placement.dto.response.StudentListResponse;
 import com.college.placement.dto.response.StudentProfileResponse;
 import com.college.placement.service.CoordinatorStudentManagementService;
 
@@ -50,14 +50,14 @@ public class CoordinatorStudentManagementController {
     @GetMapping
     @PreAuthorize("hasRole('COORDINATOR')")
 
-    public ResponseEntity<Page<StudentProfileResponse>> getMyBranchStudents(
+    public ResponseEntity<Page<StudentListResponse>> getMyBranchStudents(
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC)
             Pageable pageable) {
 
         log.info("REST request to fetch branch students for coordinator — page: {}, size: {}",
                 pageable.getPageNumber(), pageable.getPageSize());
         
-        Page<StudentProfileResponse> response = coordinatorStudentManagementService.getMyBranchStudents(pageable);
+        Page<StudentListResponse> response = coordinatorStudentManagementService.getMyBranchStudents(pageable);
         return ResponseEntity.ok(response);
     }
 

@@ -1,7 +1,7 @@
 package com.college.placement.controller;
 
 import com.college.placement.dto.request.StudentProfileUpdateRequest;
-import com.college.placement.dto.response.CompanyResponse;
+import com.college.placement.dto.response.CompanyListResponse;
 import com.college.placement.dto.response.StudentProfileResponse;
 import com.college.placement.service.StudentProfileService;
 
@@ -279,7 +279,7 @@ public class StudentProfileController {
      */
     @GetMapping("/me/eligible-companies")
     @PreAuthorize("hasRole('STUDENT')")
-    public ResponseEntity<Page<CompanyResponse>> getEligibleCompanies(
+    public ResponseEntity<Page<CompanyListResponse>> getEligibleCompanies(
 
             @RequestParam(name = "page", defaultValue = "0")
             int page,
@@ -301,10 +301,34 @@ public class StudentProfileController {
         Sort.Direction direction = sortDir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
-        Page<CompanyResponse> response = studentProfileService.getEligibleCompanies(pageable);
+        Page<CompanyListResponse> response = studentProfileService.getEligibleCompanies(pageable);
 
         return ResponseEntity.ok(response);
     }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // G. promte all students
+    // ═══════════════════════════════════════════════════════════════════════════
+
+
+
+
+    @PutMapping("/promote-all")
+    @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR')")
+    public ResponseEntity<String> promoteAllStudents() {
+
+        studentProfileService.promoteAllStudents();
+
+        return ResponseEntity.ok("All eligible students promoted successfully.");
+    }
+
+
+
+
+
+
+
+
 
     // ═══════════════════════════════════════════════════════════════════════════
     // G. PRIVATE VALIDATION HELPERS

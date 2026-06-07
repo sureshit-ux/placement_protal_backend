@@ -61,7 +61,7 @@ public interface StudentProfileRepository extends JpaRepository<StudentProfile, 
                                                         @Param("minCgpa") Double minCgpa,
                                                         @Param("allowedStatuses") List<PlacementStatus> allowedStatuses,
                                                         Pageable pageable);
-
+    List<StudentProfile> findByYearLessThan(Integer year);
     long countByBranch(Branch branch);
 
     long countByBranchAndPlacementStatus(

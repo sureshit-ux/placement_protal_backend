@@ -1,5 +1,5 @@
 package com.college.placement.service;
-
+import com.college.placement.dto.response.CompanyListResponse;
 import com.college.placement.dto.request.CompanyRequest;
 import com.college.placement.dto.response.BranchResponse;
 import com.college.placement.dto.response.CompanyResponse;
@@ -235,12 +235,11 @@ public class CompanyService {
      * @return a Page of CompanyResponses
      */
     @Transactional(readOnly = true)
-    public Page<CompanyResponse> getActiveDrives(Pageable pageable) {
-        log.info("Fetching active company placement drives");
-        return companyRepository.findActiveDrives(LocalDateTime.now(), pageable)
-                .map(this::mapToCompanyResponse);
-    }
+    public Page<CompanyListResponse> getActiveDrives(Pageable pageable) {
 
+        return companyRepository.findActiveDrives(LocalDateTime.now(), pageable)
+                .map(this::mapToListResponse);
+    }
     /**
      * Fetches expired placement drives (where applyDeadline has passed).
      *
@@ -389,6 +388,18 @@ public class CompanyService {
                 .allowedYears(new HashSet<>(company.getAllowedYears()))
                 .build();
     }
+
+    private CompanyListResponse mapToListResponse(Company company) {
+
+        return CompanyListResponse.builder()
+                .id(company.getId())
+                .companyName(company.getCompanyName())
+                .roleOffered(company.getRoleOffered())
+                .packageOffered(company.getPackageOffered())
+                .applyDeadline(company.getApplyDeadline())
+                .build();
+    }
+
 
     /**
      * Maps Branch domain entity to a structured BranchResponse DTO.

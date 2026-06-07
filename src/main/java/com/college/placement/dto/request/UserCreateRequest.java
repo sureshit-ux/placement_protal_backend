@@ -25,7 +25,8 @@ public class UserCreateRequest {
     // Optional branch ID to attach to created profile
     private Long branchId;
 
-
+    private String rollNumber;
+    private Integer year;
 
 
 

@@ -1,9 +1,6 @@
 package com.college.placement.service;
+import com.college.placement.dto.response.*;
 import com.college.placement.entity.Role;
-import com.college.placement.dto.response.BranchResponse;
-import com.college.placement.dto.response.SkillResponse;
-import com.college.placement.dto.response.StudentProfileResponse;
-import com.college.placement.dto.response.UserResponse;
 import com.college.placement.entity.Branch;
 import com.college.placement.entity.CoordinatorProfile;
 import com.college.placement.entity.StudentProfile;
@@ -64,7 +61,7 @@ public class CoordinatorStudentManagementService {
      * @return a paginated list of {@link StudentProfileResponse} belonging to the coordinator's branch
      * @throws ResourceNotFoundException if the authenticated user or their coordinator profile is not found
      */
-    public Page<StudentProfileResponse> getMyBranchStudents(Pageable pageable) {
+    public Page<StudentListResponse> getMyBranchStudents(Pageable pageable) {
         log.info("Fetching students for coordinator's assigned branch — page: {}, size: {}",
                 pageable.getPageNumber(), pageable.getPageSize());
 
@@ -75,7 +72,7 @@ public class CoordinatorStudentManagementService {
                 currentCoordinator.getId(), assignedBranch.getId());
 
         return studentProfileRepository.findByBranch(assignedBranch, pageable)
-                .map(this::mapToStudentProfileResponse);
+                .map(this::mapToStudentListResponse);
     }
 
     // ============================================================
@@ -223,4 +220,21 @@ public class CoordinatorStudentManagementService {
                 .skills(skillResponses)
                 .build();
     }
+
+    private StudentListResponse mapToStudentListResponse(
+            StudentProfile studentProfile)
+    {
+        return StudentListResponse.builder()
+                .id(studentProfile.getId())
+                .fullName(studentProfile.getUser().getFullName())
+                .rollNumber(studentProfile.getRollNumber())
+                .year(studentProfile.getYear())
+                .cgpa(studentProfile.getCgpa())
+                .placementStatus(studentProfile.getPlacementStatus())
+                .build();
+    }
+
+
+
+
 }

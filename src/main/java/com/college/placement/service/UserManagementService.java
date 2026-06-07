@@ -97,6 +97,24 @@ public class UserManagementService {
         if (request.getRole() == null) {
             throw new BadRequestException("Role is mandatory.");
         }
+        if(request.getRollNumber() == null ||
+                request.getRollNumber().isBlank())
+        {
+
+            throw new BadRequestException("Roll number is required");
+        }
+
+        if(request.getYear() == null)
+        {
+            throw new BadRequestException("Year is required");
+        }
+        if(request.getYear() < 1 || request.getYear() > 4)
+        {
+
+            throw new BadRequestException("Year must be between 1 and 4");
+        }
+
+
         String email = request.getEmail().trim().toLowerCase();
 
         if (userRepository.existsByEmail(email)) {
@@ -127,8 +145,8 @@ public class UserManagementService {
             StudentProfile studentProfile = StudentProfile.builder()
                     .user(savedUser)
                     .branch(branch)
-                    .rollNumber("TEMP-" + savedUser.getId())
-                    .year(1)
+                    .rollNumber(request.getRollNumber())
+                    .year(request.getYear())
                     .cgpa(0.0)
                     .placementStatus(PlacementStatus.NOT_PREPARED)
                     .phone(null)
@@ -374,18 +392,13 @@ public class UserManagementService {
 
                     String branchCode = row.getCell(2).getStringCellValue().trim();
 
-                    Branch branch = branchRepository
-                            .findByCode(branchCode)
-                            .orElseThrow(() ->
-                                    new ResourceNotFoundException(
-                                            "Branch not found: " + branchCode));
-                    UserCreateRequest request =
-                            UserCreateRequest.builder()
-                                    .fullName(fullName)
-                                    .email(email)
-                                    .role(Role.ROLE_STUDENT)
-                                    .branchId(branch.getId())
-                                    .build();
+
+                    String rollNumber = row.getCell(3).getStringCellValue().trim();
+
+                    Integer year = (int) row.getCell(4).getNumericCellValue();
+
+                    Branch branch = branchRepository.findByCode(branchCode).orElseThrow(() -> new ResourceNotFoundException("Branch not found: " + branchCode));
+                    UserCreateRequest request = UserCreateRequest.builder().fullName(fullName).email(email).role(Role.ROLE_STUDENT).branchId(branch.getId()). rollNumber(rollNumber).year(year).build();
 
 
                            createUser(request);
