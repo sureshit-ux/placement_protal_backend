@@ -19,6 +19,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 /**
  * =========================================================
  * AuthController — Phase 5B: Authentication Controller Layer
@@ -50,6 +54,10 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/auth")
+@Tag(
+        name = "Authentication",
+        description = "Authentication and JWT token management APIs"
+)
 public class AuthController {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
@@ -99,6 +107,8 @@ public class AuthController {
      * @return         ResponseEntity wrapping JwtAuthenticationResponse with HTTP 200
      */
     @PostMapping("/login")
+    @Operation(summary = "user login")
+
     public ResponseEntity<JwtAuthenticationResponse> login(
             @Valid @RequestBody LoginRequest request) {
 
@@ -144,6 +154,8 @@ public class AuthController {
      * @return         ResponseEntity wrapping new JwtAuthenticationResponse with HTTP 200
      */
     @PostMapping("/refresh")
+    @Operation(summary = "Refresh JWT Token")
+
     public ResponseEntity<JwtAuthenticationResponse> refreshToken(
             @Valid @RequestBody RefreshTokenRequest request) {
 
@@ -190,6 +202,8 @@ public class AuthController {
      * @return         ResponseEntity wrapping generic ApiResponse with HTTP 200
      */
     @PostMapping("/forgot-password")
+    @Operation(summary = "forget password request")
+
     public ResponseEntity<ApiResponse<Void>> forgotPassword(
             @Valid @RequestBody ForgotPasswordRequest request) {
 
@@ -239,6 +253,8 @@ public class AuthController {
      * @return         ResponseEntity wrapping generic ApiResponse with HTTP 200
      */
     @PostMapping("/reset-password")
+    @Operation(summary = "reset password request")
+
     public ResponseEntity<ApiResponse<Void>> resetPassword(
             @Valid @RequestBody ResetPasswordRequest request) {
 
@@ -252,6 +268,8 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
+    @Operation(summary = "logout user")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<ApiResponse<Void>> logout() {
 
         return ResponseEntity.ok(

@@ -6,6 +6,7 @@ import com.college.placement.service.NewsService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -14,6 +15,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
  * REST Controller exposing News management endpoints for the College Placement Management System.
@@ -28,6 +33,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/news")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "NewsController", description = "APIs for NewsController")
 public class NewsController {
 
     private final NewsService newsService;
@@ -47,6 +53,8 @@ public class NewsController {
      */
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR')")
+    @Operation(summary = "Post createNews")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<NewsResponse> createNews(
             @Valid @RequestBody NewsRequest request) {
 
@@ -72,6 +80,8 @@ public class NewsController {
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR')")
+    @Operation(summary = "Put updateNews")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<NewsResponse> updateNews(
             @PathVariable("id") Long id,
             @Valid @RequestBody NewsRequest request) {
@@ -95,6 +105,8 @@ public class NewsController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR')")
+    @Operation(summary = "Delete deleteNews")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<Void> deleteNews(
             @PathVariable("id") Long id) {
 
@@ -117,6 +129,8 @@ public class NewsController {
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR', 'STUDENT')")
+    @Operation(summary = "Get getNewsById")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<NewsResponse> getNewsById(
             @PathVariable("id") Long id) {
 
@@ -141,8 +155,9 @@ public class NewsController {
      */
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR', 'STUDENT')")
-    public ResponseEntity<Page<NewsResponse>> getAllNews(
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+    @Operation(summary = "Get getAllNews")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<Page<NewsResponse>> getAllNews(      @ParameterObject @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable) {
 
         log.info("REST request to fetch all news — page: {}, size: {}",
@@ -168,9 +183,11 @@ public class NewsController {
      */
     @GetMapping("/category/{category}")
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR', 'STUDENT')")
+    @Operation(summary = "Get  getNewsByCategory")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<Page<NewsResponse>> getNewsByCategory(
             @PathVariable("category") String category,
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+            @ParameterObject @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable) {
 
         log.info("REST request to fetch news by category: '{}'", category);

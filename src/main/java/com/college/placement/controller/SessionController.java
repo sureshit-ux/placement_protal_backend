@@ -6,6 +6,7 @@ import com.college.placement.service.SessionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -15,6 +16,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.time.LocalDateTime;
 
@@ -31,6 +36,7 @@ import java.time.LocalDateTime;
 @RequestMapping("/api/sessions")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "SessionController", description = "APIs for SessionController")
 public class SessionController {
 
     private final SessionService sessionService;
@@ -50,6 +56,8 @@ public class SessionController {
      */
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR')")
+    @Operation(summary = "Post  createSession")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<SessionResponse> createSession(
             @Valid @RequestBody SessionRequest request) {
 
@@ -75,6 +83,8 @@ public class SessionController {
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR')")
+    @Operation(summary = "Put updateSession")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<SessionResponse> updateSession(
             @PathVariable("id") Long id,
             @Valid @RequestBody SessionRequest request) {
@@ -98,6 +108,8 @@ public class SessionController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR')")
+    @Operation(summary = "Delete deleteSession")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<Void> deleteSession(
             @PathVariable("id") Long id)
     {
@@ -121,6 +133,8 @@ public class SessionController {
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR', 'STUDENT')")
+    @Operation(summary = "Get getSessionById")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<SessionResponse> getSessionById(
             @PathVariable("id") Long id) {
 
@@ -145,8 +159,10 @@ public class SessionController {
      */
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR', 'STUDENT')")
+    @Operation(summary = "Get  getAllSessions")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<Page<SessionResponse>> getAllSessions(
-            @PageableDefault(size = 10, sort = "sessionDate", direction = Sort.Direction.ASC)
+            @ParameterObject @PageableDefault(size = 10, sort = "sessionDate", direction = Sort.Direction.ASC)
             Pageable pageable) {
 
         log.info("REST request to fetch all sessions — page: {}, size: {}",
@@ -171,8 +187,10 @@ public class SessionController {
      */
     @GetMapping("/upcoming")
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR', 'STUDENT')")
+    @Operation(summary = "Get getUpcomingSessions")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<Page<SessionResponse>> getUpcomingSessions(
-            @PageableDefault(size = 10, sort = "sessionDate", direction = Sort.Direction.ASC)
+            @ParameterObject    @PageableDefault(size = 10, sort = "sessionDate", direction = Sort.Direction.ASC)
             Pageable pageable) {
 
         log.info("REST request to fetch upcoming sessions");
@@ -204,6 +222,8 @@ public class SessionController {
      */
     @GetMapping("/date-range")
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR', 'STUDENT')")
+    @Operation(summary = "Get  getSessionsBetweenDates")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<Page<SessionResponse>> getSessionsBetweenDates(
             @RequestParam("startDate")
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,

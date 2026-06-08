@@ -1,11 +1,13 @@
 package com.college.placement.controller;
 
 import com.college.placement.dto.request.TopicRequest;
+import com.college.placement.dto.response.TopicListResponse;
 import com.college.placement.dto.response.TopicResponse;
 import com.college.placement.service.TopicService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -14,6 +16,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
  * REST Controller exposing Topic management endpoints for the College Placement Management System.
@@ -29,6 +35,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/topics")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "TopicController", description = "APIs for TopicController")
 public class TopicController {
 
     private final TopicService topicService;
@@ -49,6 +56,8 @@ public class TopicController {
      */
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR')")
+    @Operation(summary = "Post createTopic")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<TopicResponse> createTopic(
             @Valid @RequestBody TopicRequest request) {
 
@@ -73,6 +82,8 @@ public class TopicController {
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR')")
+    @Operation(summary = "Put  updateTopic")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<TopicResponse> updateTopic(
             @PathVariable("id") Long id,
             @Valid @RequestBody TopicRequest request) {
@@ -97,6 +108,8 @@ public class TopicController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Delete deleteTopic")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<Void> deleteTopic(
             @PathVariable("id") Long id) {
 
@@ -119,6 +132,8 @@ public class TopicController {
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR', 'STUDENT')")
+    @Operation(summary = "Get getTopicById")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<TopicResponse> getTopicById(
             @PathVariable("id") Long id) {
 
@@ -141,12 +156,14 @@ public class TopicController {
      */
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR', 'STUDENT')")
-    public ResponseEntity<Page<TopicResponse>> getAllTopics(
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+    @Operation(summary = "Get  getAllTopics")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<Page<TopicListResponse>> getAllTopics(
+            @ParameterObject @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable) {
 
         log.info("REST request to fetch all topics — page: {}, size: {}", pageable.getPageNumber(), pageable.getPageSize());
-        Page<TopicResponse> response = topicService.getAllTopics(pageable);
+        Page<TopicListResponse> response = topicService.getAllTopics(pageable);
         return ResponseEntity.ok(response);
     }
 
@@ -165,12 +182,14 @@ public class TopicController {
      */
     @GetMapping("/global")
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR', 'STUDENT')")
-    public ResponseEntity<Page<TopicResponse>> getGlobalTopics(
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+    @Operation(summary = "Get getGlobalTopics")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<Page<TopicListResponse>> getGlobalTopics(
+            @ParameterObject   @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable) {
 
         log.info("REST request to fetch global topics");
-        Page<TopicResponse> response = topicService.getGlobalTopics(pageable);
+        Page<TopicListResponse> response = topicService.getGlobalTopics(pageable);
         return ResponseEntity.ok(response);
     }
 
@@ -204,14 +223,16 @@ public class TopicController {
 
     @GetMapping("/branch/{branchId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR', 'STUDENT')")
-    public ResponseEntity<Page<TopicResponse>> getTopicsForBranch(
+    @Operation(summary = "Get  getTopicsForBranch")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<Page<TopicListResponse>> getTopicsForBranch(
             @PathVariable("branchId") Long branchId,
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+            @ParameterObject @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable) {
 
         log.info("REST request to fetch topics for branch ID: {}", branchId);
         //if(branchID)
-        Page<TopicResponse> response = topicService.getTopicsForBranch(branchId, pageable);
+        Page<TopicListResponse> response = topicService.getTopicsForBranch(branchId, pageable);
         return ResponseEntity.ok(response);
     }
 
@@ -231,14 +252,16 @@ public class TopicController {
      */
     @GetMapping("/category/{category}")
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR', 'STUDENT')")
-    public ResponseEntity<Page<TopicResponse>> getTopicsByCategory(
+    @Operation(summary = "Get  getTopicsByCategory")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<Page<TopicListResponse>> getTopicsByCategory(
             @PathVariable("category") String category,
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+            @ParameterObject  @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable) {
 
         log.info("REST request to fetch topics by category: '{}'", category);
         //elseif(category)
-        Page<TopicResponse> response = topicService.getTopicsByCategory(category, pageable);
+        Page<TopicListResponse> response = topicService.getTopicsByCategory(category, pageable);
         return ResponseEntity.ok(response);
     }
 }

@@ -26,9 +26,14 @@ import org.springframework.web.bind.annotation.*;
  *
  * <p>Base URL: {@code /api/coordinator-profiles}</p>
  */
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/api/coordinator-profiles")
 @RequiredArgsConstructor
+@Tag(name = "CoordinatorProfileController", description = "APIs for CoordinatorProfileController")
 public class CoordinatorProfileController {
 
     private static final Logger log = LoggerFactory.getLogger(CoordinatorProfileController.class);
@@ -50,6 +55,8 @@ public class CoordinatorProfileController {
      */
     @GetMapping("/me")
     @PreAuthorize("hasRole('COORDINATOR')")
+    @Operation(summary = "Get  getMyProfile")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<CoordinatorProfileResponse> getMyProfile() {
         log.info("REST request to fetch authenticated coordinator's own profile");
         return ResponseEntity.ok(coordinatorProfileService.getMyProfile());
@@ -70,6 +77,8 @@ public class CoordinatorProfileController {
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Get getCoordinatorProfileById")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<CoordinatorProfileResponse> getCoordinatorProfileById(
             @PathVariable("id") Long id) {
 
@@ -93,6 +102,8 @@ public class CoordinatorProfileController {
      */
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Get getAllCoordinatorProfiles")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<Page<CoordinatorProfileResponse>> getAllCoordinatorProfiles(
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.ASC)
             Pageable pageable) {
@@ -120,6 +131,8 @@ public class CoordinatorProfileController {
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Put  updateCoordinatorProfile")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<CoordinatorProfileResponse> updateCoordinatorProfile(
             @PathVariable("id") Long id,
             @Valid @RequestBody CoordinatorProfileUpdateRequest request) {
@@ -146,6 +159,8 @@ public class CoordinatorProfileController {
      */
     @PatchMapping("/{id}/deactivate")
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Patch deactivateCoordinator")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<Void> deactivateCoordinator(
             @PathVariable("id") Long id) {
 

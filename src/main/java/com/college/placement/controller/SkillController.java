@@ -11,6 +11,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import java.util.List;
 
 /**
@@ -20,6 +24,7 @@ import java.util.List;
 @RequestMapping("/api/skills")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "SkillController", description = "APIs for SkillController")
 public class SkillController {
 
     private final SkillService skillService;
@@ -32,6 +37,8 @@ public class SkillController {
      */
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR', 'STUDENT')")
+    @Operation(summary = "Get getAllSkills")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<List<SkillResponse>> getAllSkills() {
         log.info("REST request to fetch all standardized skills");
         List<SkillResponse> skills = skillService.getAllSkills();
@@ -46,6 +53,8 @@ public class SkillController {
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR', 'STUDENT')")
+    @Operation(summary = "Get getSkillById")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<SkillResponse> getSkillById(@PathVariable("id") Long id) {
         log.info("REST request to fetch skill by ID: {}", id);
         SkillResponse response = skillService.getSkillById(id);
@@ -61,6 +70,8 @@ public class SkillController {
      */
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR')")
+    @Operation(summary = "Post  createSkill")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<SkillResponse> createSkill(@Valid @RequestBody SkillRequest request) {
         log.info("REST request to create skill: {}", request.getName());
         SkillResponse response = skillService.createSkill(request);
@@ -76,6 +87,8 @@ public class SkillController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Delete deleteSkill")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<Void> deleteSkill(@PathVariable("id") Long id) {
         log.info("REST request to delete skill ID: {}", id);
         skillService.deleteSkill(id);

@@ -22,9 +22,14 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * <p>Base URL: {@code /api/coordinator/dashboard}</p>
  */
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/api/coordinator/dashboard")
 @RequiredArgsConstructor
+@Tag(name = "CoordinatorDashboardController", description = "APIs for CoordinatorDashboardController")
 public class CoordinatorDashboardController {
 
     private static final Logger log = LoggerFactory.getLogger(CoordinatorDashboardController.class);
@@ -45,6 +50,8 @@ public class CoordinatorDashboardController {
      */
     @GetMapping
     @PreAuthorize("hasRole('COORDINATOR')")
+    @Operation(summary = "Get getDashboard")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<CoordinatorDashboardResponse> getDashboard() {
         log.info("REST request to fetch dashboard statistics for authenticated coordinator");
         

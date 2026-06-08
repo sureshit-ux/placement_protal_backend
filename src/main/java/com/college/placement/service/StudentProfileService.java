@@ -1,11 +1,7 @@
 package com.college.placement.service;
+import com.college.placement.dto.response.*;
 import com.college.placement.repository.CompanyRepository;
 import com.college.placement.dto.request.StudentProfileUpdateRequest;
-import com.college.placement.dto.response.BranchResponse;
-import com.college.placement.dto.response.CompanyResponse;
-import com.college.placement.dto.response.SkillResponse;
-import com.college.placement.dto.response.StudentProfileResponse;
-import com.college.placement.dto.response.UserResponse;
 import com.college.placement.entity.Company;
 import com.college.placement.entity.Skill;
 import com.college.placement.entity.StudentProfile;
@@ -16,7 +12,6 @@ import com.college.placement.exception.UnauthorizedException;
 import com.college.placement.repository.SkillRepository;
 import com.college.placement.repository.StudentProfileRepository;
 import com.college.placement.repository.UserRepository;
-import com.college.placement.dto.response.CompanyListResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -381,11 +376,11 @@ public class StudentProfileService {
      * @return          paginated Page<StudentProfileResponse>
      */
     @Transactional(readOnly = true)
-    public Page<StudentProfileResponse> searchStudents(Long     branchId,
-                                                       Integer  year,
-                                                       Double   minCgpa,
-                                                       List<Long> skillIds,
-                                                       Pageable pageable) {
+    public Page<StudentListResponse> searchStudents(Long     branchId,
+                                                    Integer  year,
+                                                    Double   minCgpa,
+                                                    List<Long> skillIds,
+                                                    Pageable pageable) {
         logger.info("Student search request — branchId: {}, year: {}, minCgpa: {}, skillIds: {}",
                 branchId, year, minCgpa, skillIds);
 
@@ -407,7 +402,7 @@ public class StudentProfileService {
         logger.info("Search returned {} total matching student(s).", resultPage.getTotalElements());
 
         // ── Step 2 & 3: Map Page<StudentProfile> → Page<StudentProfileResponse> ─
-        return resultPage.map(this::mapToStudentProfileResponse);
+        return resultPage.map(this::mapToStudentListResponse);
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -662,6 +657,18 @@ public class StudentProfileService {
                 .roleOffered(company.getRoleOffered())
                 .packageOffered(company.getPackageOffered())
                 .applyDeadline(company.getApplyDeadline())
+                .build();
+    }
+    private StudentListResponse mapToStudentListResponse(
+            StudentProfile studentProfile)
+    {
+        return StudentListResponse.builder()
+                .id(studentProfile.getId())
+                .fullName(studentProfile.getUser().getFullName())
+                .rollNumber(studentProfile.getRollNumber())
+                .year(studentProfile.getYear())
+                .cgpa(studentProfile.getCgpa())
+                .placementStatus(studentProfile.getPlacementStatus())
                 .build();
     }
 

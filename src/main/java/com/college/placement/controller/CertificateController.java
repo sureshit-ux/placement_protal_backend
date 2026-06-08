@@ -16,6 +16,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 /**
  * REST Controller exposing Certificate management endpoints for the College Placement Management System.
  *
@@ -29,6 +33,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/certificates")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "CertificateController", description = "APIs for CertificateController")
 public class CertificateController {
 
     private final CertificateService certificateService;
@@ -49,6 +54,8 @@ public class CertificateController {
      */
     @PostMapping
     @PreAuthorize("hasRole('STUDENT')")
+    @Operation(summary = "Post  createCertificate")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<CertificateResponse> createCertificate(
             @Valid @RequestBody CertificateRequest request) {
 
@@ -73,6 +80,8 @@ public class CertificateController {
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('STUDENT')")
+    @Operation(summary = "Put updateCertificate")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<CertificateResponse> updateCertificate(
             @PathVariable("id") Long id,
             @Valid @RequestBody CertificateRequest request) {
@@ -97,6 +106,8 @@ public class CertificateController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('STUDENT', 'ADMIN')")
+    @Operation(summary = "Delete deleteCertificate")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<Void> deleteCertificate(
             @PathVariable("id") Long id) {
 
@@ -119,6 +130,8 @@ public class CertificateController {
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('STUDENT', 'COORDINATOR', 'ADMIN')")
+    @Operation(summary = "Get getCertificateById")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<CertificateResponse> getCertificateById(
             @PathVariable("id") Long id) {
 
@@ -142,6 +155,8 @@ public class CertificateController {
      */
     @GetMapping("/my")
     @PreAuthorize("hasRole('STUDENT')")
+    @Operation(summary = "Get getMyCertificates")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<Page<CertificateResponse>> getMyCertificates(
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC)
             Pageable pageable) {
@@ -168,6 +183,8 @@ public class CertificateController {
      */
     @GetMapping("/my/status/{status}")
     @PreAuthorize("hasRole('STUDENT')")
+    @Operation(summary = "Get getMyCertificatesByStatus")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<Page<CertificateResponse>> getMyCertificatesByStatus(
             @PathVariable("status") CertificateStatus status,
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC)
@@ -194,6 +211,8 @@ public class CertificateController {
      */
     @PutMapping("/{id}/approve")
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR')")
+    @Operation(summary = "Put approveCertificate")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<CertificateResponse> approveCertificate(
             @PathVariable("id") Long id) {
 
@@ -217,6 +236,8 @@ public class CertificateController {
      */
     @PutMapping("/{id}/reject")
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR')")
+    @Operation(summary = "Put rejectCertificate")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<CertificateResponse> rejectCertificate(
             @PathVariable("id") Long id) {
 
@@ -240,6 +261,8 @@ public class CertificateController {
      */
     @GetMapping("/pending")
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR')")
+    @Operation(summary = "Get getPendingCertificates")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<Page<CertificateResponse>> getPendingCertificates(
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC)
             Pageable pageable) {
@@ -253,6 +276,8 @@ public class CertificateController {
 
     @GetMapping("/status/{status}")
     @PreAuthorize("hasAnyRole('STUDENT','COORDINATOR','ADMIN')")
+    @Operation(summary = "Get  getCertificatesByStatus")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<Page<CertificateResponse>> getCertificatesByStatus(
             @PathVariable(value="status") CertificateStatus status,
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC)

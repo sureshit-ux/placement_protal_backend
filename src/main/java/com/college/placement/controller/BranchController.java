@@ -11,6 +11,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import java.util.List;
 
 /**
@@ -20,6 +24,7 @@ import java.util.List;
 @RequestMapping("/api/branches")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "BranchController", description = "APIs for BranchController")
 public class BranchController {
 
     private final BranchService branchService;
@@ -32,6 +37,8 @@ public class BranchController {
      */
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR', 'STUDENT')")
+    @Operation(summary = " Get all branches")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<List<BranchResponse>> getAllBranches() {
         log.info("REST request to fetch all academic branches");
         List<BranchResponse> branches = branchService.getAllBranches();
@@ -46,6 +53,8 @@ public class BranchController {
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR', 'STUDENT')")
+    @Operation(summary = "getBranchById")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<BranchResponse> getBranchById(@PathVariable("id") Long id) {
         log.info("REST request to fetch branch by ID: {}", id);
         BranchResponse response = branchService.getBranchById(id);
@@ -61,6 +70,8 @@ public class BranchController {
      */
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "createBranch")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<BranchResponse> createBranch(@Valid @RequestBody BranchRequest request) {
         log.info("REST request to create branch with code: {}", request.getCode());
         BranchResponse response = branchService.createBranch(request);
@@ -77,6 +88,8 @@ public class BranchController {
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "updateBranch")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<BranchResponse> updateBranch(
             @PathVariable("id") Long id,
             @Valid @RequestBody BranchRequest request) {
@@ -94,6 +107,8 @@ public class BranchController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "deleteBranch")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<Void> deleteBranch(@PathVariable("id") Long id) {
         log.info("REST request to delete branch ID: {}", id);
         branchService.deleteBranch(id);

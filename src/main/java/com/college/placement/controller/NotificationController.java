@@ -10,9 +10,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/api/notifications")
 @RequiredArgsConstructor
+@Tag(name = "NotificationController", description = "APIs for NotificationController")
 public class NotificationController {
 
     private final NotificationService notificationService;
@@ -23,6 +28,8 @@ public class NotificationController {
      * GET /api/notifications
      */
     @GetMapping
+    @Operation(summary = "Get endpoint")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<Page<NotificationResponse>> getMyNotifications(
             Pageable pageable) {
 
@@ -35,6 +42,8 @@ public class NotificationController {
      * GET /api/notifications/unread-count
      */
     @GetMapping("/unread-count")
+    @Operation(summary = "Get endpoint")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<Long> getUnreadCount(Authentication authentication) {
 
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
@@ -50,6 +59,8 @@ public class NotificationController {
      * PUT /api/notifications/{notificationId}/read
      */
     @PutMapping("/{notificationId}/read")
+    @Operation(summary = "Put endpoint")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<Void> markAsRead(
             @PathVariable Long notificationId) {
 

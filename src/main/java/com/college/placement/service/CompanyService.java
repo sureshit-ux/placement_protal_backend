@@ -209,10 +209,10 @@ public class CompanyService {
      * @return a Page of CompanyResponses
      */
     @Transactional(readOnly = true)
-    public Page<CompanyResponse> getAllCompanies(Pageable pageable) {
+    public Page<CompanyListResponse> getAllCompanies(Pageable pageable) {
         log.info("Fetching all company drives with pageable info: {}", pageable);
         return companyRepository.findAll(pageable)
-                .map(this::mapToCompanyResponse);
+                .map(this::mapToListResponse);
     }
 
     /**
@@ -222,10 +222,10 @@ public class CompanyService {
      * @return a Page of CompanyResponses
      */
     @Transactional(readOnly = true)
-    public Page<CompanyResponse> getUpcomingDrives(Pageable pageable) {
+    public Page<CompanyListResponse> getUpcomingDrives(Pageable pageable) {
         log.info("Fetching upcoming company placement drives");
         return companyRepository.findUpcomingDrives(LocalDateTime.now(), pageable)
-                .map(this::mapToCompanyResponse);
+                .map(this::mapToListResponse);
     }
 
     /**
@@ -265,7 +265,7 @@ public class CompanyService {
      * @return a Page of CompanyResponses matching criteria
      */
     @Transactional(readOnly = true)
-    public Page<CompanyResponse> searchCompanies(
+    public Page<CompanyListResponse> searchCompanies(
             String companyName,
             String roleOffered,
             Long branchId,
@@ -275,7 +275,7 @@ public class CompanyService {
         log.info("Executing dynamic search query with filters - Name: '{}', Role: '{}', Branch: {}, Year: {}, CGPA: {}",
                 companyName, roleOffered, branchId, year, cgpa);
         return companyRepository.searchAndFilterCompanies(companyName, roleOffered, branchId, year, cgpa, pageable)
-                .map(this::mapToCompanyResponse);
+                .map(this::mapToListResponse);
     }
 
     // ============================================================

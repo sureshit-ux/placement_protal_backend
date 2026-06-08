@@ -18,6 +18,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 /**
  * REST Controller exposing Administrative User Management endpoints for the
  * College Placement Management System.
@@ -31,6 +35,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
+@Tag(name = "UserManagementController", description = "APIs for UserManagementController")
 public class UserManagementController {
 
     private static final Logger log = LoggerFactory.getLogger(UserManagementController.class);
@@ -51,6 +56,8 @@ public class UserManagementController {
      */
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Post createUser")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<UserResponse> createUser(
             @Valid @RequestBody UserCreateRequest request) {
 
@@ -65,6 +72,8 @@ public class UserManagementController {
 
     @DeleteMapping("/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Delete deleteUser")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<Void> deleteUser(
             @PathVariable("userId") Long userId) {
 
@@ -91,6 +100,8 @@ public class UserManagementController {
      */
     @GetMapping("/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Get getUserById")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<UserResponse> getUserById(
             @PathVariable("userId") Long userId) {
 
@@ -113,6 +124,8 @@ public class UserManagementController {
      */
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Get getAllUsers")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<Page<UserResponse>> getAllUsers(
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC)
             Pageable pageable) {
@@ -144,6 +157,8 @@ public class UserManagementController {
      */
     @GetMapping("/role/{role}")
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "get getUsersByRole")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<Page<UserResponse>> getUsersByRole(
             @PathVariable("role") Role role,
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC)
@@ -168,6 +183,8 @@ public class UserManagementController {
      */
     @PutMapping("/{userId}/activate")
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Put activateUser")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<UserResponse> activateUser(
             @PathVariable("userId") Long userId) {
 
@@ -190,6 +207,8 @@ public class UserManagementController {
      */
     @PutMapping("/{userId}/deactivate")
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Put deactivateUser")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<UserResponse> deactivateUser(
             @PathVariable("userId") Long userId) {
 
@@ -205,6 +224,8 @@ public class UserManagementController {
 
     @PostMapping("/bulk-upload/students")
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Post  uploadStudents")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<BulkUploadResponse> uploadStudents(
             @RequestParam("file") MultipartFile file) {
 

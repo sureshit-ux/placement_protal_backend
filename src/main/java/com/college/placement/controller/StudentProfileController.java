@@ -4,7 +4,7 @@ import com.college.placement.dto.request.StudentProfileUpdateRequest;
 import com.college.placement.dto.response.CompanyListResponse;
 import com.college.placement.dto.response.StudentProfileResponse;
 import com.college.placement.service.StudentProfileService;
-
+import com.college.placement.dto.response.StudentListResponse;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +15,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.Arrays;
 import java.util.List;
@@ -55,6 +59,7 @@ import com.college.placement.exception.BadRequestException;
  */
 @RestController
 @RequestMapping("/api/students")
+@Tag(name = "StudentProfileController", description = "APIs for StudentProfileController")
 public class StudentProfileController {
 
     private static final Logger logger = LoggerFactory.getLogger(StudentProfileController.class);
@@ -94,6 +99,8 @@ public class StudentProfileController {
      */
     @GetMapping("/me")
     @PreAuthorize("hasRole('STUDENT')")
+    @Operation(summary = "Get getMyProfile")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<StudentProfileResponse> getMyProfile() {
         logger.info("REST request to get logged-in student's profile.");
         StudentProfileResponse response = studentProfileService.getMyProfile();
@@ -123,6 +130,8 @@ public class StudentProfileController {
      */
     @PutMapping("/me")
     @PreAuthorize("hasRole('STUDENT')")
+    @Operation(summary = "Put updateMyProfile")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<StudentProfileResponse> updateMyProfile(
             @Valid @RequestBody StudentProfileUpdateRequest request) {
         
@@ -155,6 +164,8 @@ public class StudentProfileController {
      */
     @PostMapping("/me/skills")
     @PreAuthorize("hasRole('STUDENT')")
+    @Operation(summary = "Post addSkills")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<StudentProfileResponse> addSkills(@RequestBody List<Long> skillIds) {
         logger.info("REST request to add skills to logged-in student's profile. Skill IDs: {}", skillIds);
         StudentProfileResponse response = studentProfileService.addSkills(skillIds);
@@ -184,6 +195,8 @@ public class StudentProfileController {
      */
     @DeleteMapping("/me/skills")
     @PreAuthorize("hasRole('STUDENT')")
+    @Operation(summary = "Delete  removeSkills")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<StudentProfileResponse> removeSkills(@RequestBody List<Long> skillIds) {
         logger.info("REST request to remove skills from logged-in student's profile. Skill IDs: {}", skillIds);
         StudentProfileResponse response = studentProfileService.removeSkills(skillIds);
@@ -220,7 +233,9 @@ public class StudentProfileController {
      */
     @GetMapping("/search")
     @PreAuthorize("hasAnyRole('COORDINATOR', 'ADMIN')")
-    public ResponseEntity<Page<StudentProfileResponse>> searchStudents(
+    @Operation(summary = "Get searchStudents")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<Page<StudentListResponse>> searchStudents(
 
             @RequestParam(name = "branchId", required = false) Long branchId,
 
@@ -247,7 +262,7 @@ public class StudentProfileController {
         Sort.Direction direction = sortDir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
-        Page<StudentProfileResponse> response = studentProfileService.searchStudents(
+        Page<StudentListResponse> response = studentProfileService.searchStudents(
                 branchId, year, minCgpa, skillIds, pageable);
 
         return ResponseEntity.ok(response);
@@ -279,6 +294,8 @@ public class StudentProfileController {
      */
     @GetMapping("/me/eligible-companies")
     @PreAuthorize("hasRole('STUDENT')")
+    @Operation(summary = "Get getEligibleCompanies")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<Page<CompanyListResponse>> getEligibleCompanies(
 
             @RequestParam(name = "page", defaultValue = "0")
@@ -315,6 +332,8 @@ public class StudentProfileController {
 
     @PutMapping("/promote-all")
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR')")
+    @Operation(summary = "Put promoteAllStudents")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<String> promoteAllStudents() {
 
         studentProfileService.promoteAllStudents();

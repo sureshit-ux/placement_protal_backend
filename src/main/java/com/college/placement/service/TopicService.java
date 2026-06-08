@@ -2,6 +2,7 @@ package com.college.placement.service;
 
 import com.college.placement.dto.request.TopicRequest;
 import com.college.placement.dto.response.BranchResponse;
+import com.college.placement.dto.response.TopicListResponse;
 import com.college.placement.dto.response.TopicResponse;
 import com.college.placement.dto.response.UserResponse;
 import com.college.placement.entity.Branch;
@@ -243,9 +244,9 @@ public class TopicService {
      * @param pageable pagination and sorting parameters
      * @return a {@link Page} of {@link TopicResponse} containing all topics
      */
-    public Page<TopicResponse> getAllTopics(Pageable pageable) {
+    public Page<TopicListResponse> getAllTopics(Pageable pageable) {
         log.debug("Fetching all topics with pageable: {}", pageable);
-        return topicRepository.findAll(pageable).map(this::mapToTopicResponse);
+        return topicRepository.findAll(pageable).map(this::mapToTopicListResponse);
     }
 
     // ============================================================
@@ -261,9 +262,9 @@ public class TopicService {
      * @param pageable pagination and sorting parameters
      * @return a {@link Page} of {@link TopicResponse} containing all global topics
      */
-    public Page<TopicResponse> getGlobalTopics(Pageable pageable) {
+    public Page<TopicListResponse> getGlobalTopics(Pageable pageable) {
         log.debug("Fetching global topics with pageable: {}", pageable);
-        return topicRepository.findByIsGlobalTrue(pageable).map(this::mapToTopicResponse);
+        return topicRepository.findByIsGlobalTrue(pageable).map(this::mapToTopicListResponse);
     }
 
     // ============================================================
@@ -282,14 +283,14 @@ public class TopicService {
      * @return a {@link Page} of {@link TopicResponse} applicable to the specified branch
      * @throws ResourceNotFoundException if no branch exists with the given ID
      */
-    public Page<TopicResponse> getTopicsForBranch(Long branchId, Pageable pageable) {
+    public Page<TopicListResponse> getTopicsForBranch(Long branchId, Pageable pageable) {
         log.debug("Fetching topics for branch id: {}", branchId);
 
         Branch branch = branchRepository.findById(branchId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Branch not found with id: " + branchId));
 
-        return topicRepository.findTopicsForBranch(branch, pageable).map(this::mapToTopicResponse);
+        return topicRepository.findTopicsForBranch(branch, pageable).map(this::mapToTopicListResponse);
     }
 
     // ============================================================
@@ -306,10 +307,10 @@ public class TopicService {
      * @param pageable pagination and sorting parameters
      * @return a {@link Page} of {@link TopicResponse} for the given category
      */
-    public Page<TopicResponse> getTopicsByCategory(String category, Pageable pageable) {
+    public Page<TopicListResponse> getTopicsByCategory(String category, Pageable pageable) {
         log.debug("Fetching topics for category: '{}' with pageable: {}", category, pageable);
         return topicRepository.findByCategoryIgnoreCase(category.trim(), pageable)
-                .map(this::mapToTopicResponse);
+                .map(this::mapToTopicListResponse);
     }
 
     // ============================================================
@@ -412,6 +413,18 @@ public class TopicService {
                 .resourceLinks(topic.getResourceLinks() != null
                         ? new ArrayList<>(topic.getResourceLinks())
                         : new ArrayList<>())
+                .build();
+    }
+
+    private TopicListResponse mapToTopicListResponse(Topic topic) {
+
+        return TopicListResponse.builder()
+                .id(topic.getId())
+                .title(topic.getTitle())
+                .category(topic.getCategory())
+                .difficultyLevel(topic.getDifficultyLevel())
+                .isGlobal(topic.getIsGlobal())
+                .createdAt(topic.getCreatedAt())
                 .build();
     }
 }

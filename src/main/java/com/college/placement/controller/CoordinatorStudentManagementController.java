@@ -12,6 +12,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -28,7 +31,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/coordinator/students")
 @RequiredArgsConstructor
-
+@Tag(name = "Coordinator Student Management", description = "APIs for coordinators to manage and monitor students from their assigned branch")
 public class CoordinatorStudentManagementController {
 
     private static final Logger log = LoggerFactory.getLogger(CoordinatorStudentManagementController.class);
@@ -49,7 +52,8 @@ public class CoordinatorStudentManagementController {
      */
     @GetMapping
     @PreAuthorize("hasRole('COORDINATOR')")
-
+    @Operation(summary = "Get students from coordinator's branch", description = "Returns a paginated list of students belonging to the authenticated coordinator's assigned branch")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<Page<StudentListResponse>> getMyBranchStudents(
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC)
             Pageable pageable) {
@@ -76,7 +80,8 @@ public class CoordinatorStudentManagementController {
      */
     @GetMapping("/{studentId}")
     @PreAuthorize("hasRole('COORDINATOR')")
-
+    @Operation(summary = "Get student details", description = "Returns detailed information for a student belonging to the authenticated coordinator's assigned branch")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<StudentProfileResponse> getStudentDetails
     (
             @PathVariable("studentId") Long studentId) {

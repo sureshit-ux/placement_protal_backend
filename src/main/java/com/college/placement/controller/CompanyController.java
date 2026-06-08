@@ -16,6 +16,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,6 +31,7 @@ import java.util.List;
 @RequestMapping("/api/companies")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "CompanyController", description = "APIs for CompanyController")
 public class CompanyController {
 
     private final CompanyService companyService;
@@ -44,6 +49,8 @@ public class CompanyController {
      */
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR')")
+    @Operation(summary = "Post endpoint")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<CompanyResponse> createCompany(@Valid @RequestBody CompanyRequest request) {
         log.info("REST request to create new company drive: {}", request.getCompanyName());
         CompanyResponse response = companyService.createCompany(request);
@@ -59,6 +66,8 @@ public class CompanyController {
      */
     @PutMapping("/{companyId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR')")
+    @Operation(summary = "Put endpoint")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<CompanyResponse> updateCompany(
             @PathVariable("companyId") Long companyId,
             @Valid @RequestBody CompanyRequest request) {
@@ -78,6 +87,8 @@ public class CompanyController {
  */
     @DeleteMapping("/{companyId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR')")
+    @Operation(summary = "Delete endpoint")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<Void> deleteCompany(
             @PathVariable("companyId") Long companyId) {
 
@@ -95,6 +106,8 @@ public class CompanyController {
      */
     @GetMapping("/{companyId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR', 'STUDENT')")
+    @Operation(summary = "Get endpoint")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<CompanyResponse> getCompanyById(
             @PathVariable("companyId") Long companyId) {
 
@@ -116,7 +129,9 @@ public class CompanyController {
      */
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR')")
-    public ResponseEntity<Page<CompanyResponse>> getAllCompanies(
+    @Operation(summary = "Get  getAllCompanies")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<Page<CompanyListResponse>> getAllCompanies(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "10") int size,
             @RequestParam(name = "sortBy", defaultValue = "id") String sortBy,
@@ -129,7 +144,7 @@ public class CompanyController {
         Sort.Direction direction = sortDir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
-        Page<CompanyResponse> response = companyService.getAllCompanies(pageable);
+        Page<CompanyListResponse> response = companyService.getAllCompanies(pageable);
         return ResponseEntity.ok(response);
     }
 
@@ -144,7 +159,9 @@ public class CompanyController {
      */
     @GetMapping("/upcoming")
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR', 'STUDENT')")
-    public ResponseEntity<Page<CompanyResponse>> getUpcomingDrives(
+    @Operation(summary = "Get getUpcomingDrives")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<Page<CompanyListResponse>> getUpcomingDrives(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "10") int size,
             @RequestParam(name = "sortBy", defaultValue = "driveDate") String sortBy,
@@ -157,7 +174,7 @@ public class CompanyController {
         Sort.Direction direction = sortDir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
-        Page<CompanyResponse> response = companyService.getUpcomingDrives(pageable);
+        Page<CompanyListResponse> response = companyService.getUpcomingDrives(pageable);
         return ResponseEntity.ok(response);
     }
 
@@ -172,6 +189,8 @@ public class CompanyController {
      */
     @GetMapping("/active")
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR', 'STUDENT')")
+    @Operation(summary = "Get getActiveDrives")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<Page<CompanyListResponse>> getActiveDrives(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "10") int size,
@@ -205,6 +224,8 @@ public class CompanyController {
      */
     @GetMapping("/expired")
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR')")
+    @Operation(summary = "Get getExpiredDrives")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<Page<CompanyResponse>> getExpiredDrives(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "10") int size,
@@ -238,7 +259,9 @@ public class CompanyController {
      */
     @GetMapping("/search")
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR', 'STUDENT')")
-    public ResponseEntity<Page<CompanyResponse>> searchCompanies(
+    @Operation(summary = "Get searchCompanies")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<Page<CompanyListResponse>> searchCompanies(
             @RequestParam(name = "companyName", required = false) String companyName,
             @RequestParam(name = "roleOffered", required = false) String roleOffered,
             @RequestParam(name = "branchId", required = false) Long branchId,
@@ -257,7 +280,7 @@ public class CompanyController {
         Sort.Direction direction = sortDir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
-        Page<CompanyResponse> response = companyService.searchCompanies(companyName, roleOffered, branchId, year, cgpa, pageable);
+        Page<CompanyListResponse> response = companyService.searchCompanies(companyName, roleOffered, branchId, year, cgpa, pageable);
         return ResponseEntity.ok(response);
     }
 

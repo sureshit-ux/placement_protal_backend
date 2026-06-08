@@ -15,6 +15,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,6 +31,7 @@ import java.util.List;
 @RequestMapping("/api/applications")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "PlacementApplicationController", description = "APIs for PlacementApplicationController")
 public class PlacementApplicationController {
 
     private final ApplicationService applicationService;
@@ -45,6 +50,8 @@ public class PlacementApplicationController {
      */
     @PostMapping
     @PreAuthorize("hasRole('STUDENT')")
+    @Operation(summary = "Post applyToCompany")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<ApplicationResponse> applyToCompany(
             @Valid @RequestBody ApplicationRequest request) {
         log.info("REST request to submit placement application for company ID: {}", 
@@ -63,6 +70,8 @@ public class PlacementApplicationController {
      */
     @GetMapping("/{applicationId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR', 'STUDENT')")
+    @Operation(summary = "Get  getApplicationById")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<ApplicationResponse> getApplicationById(
             @PathVariable("applicationId") Long applicationId) {
         log.info("REST request to retrieve application details for ID: {}", applicationId);
@@ -81,6 +90,8 @@ public class PlacementApplicationController {
      */
     @GetMapping("/my")
     @PreAuthorize("hasRole('STUDENT')")
+    @Operation(summary = "Get getMyApplications")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<Page<ApplicationResponse>> getMyApplications(
             @RequestParam(name = "status", required = false) ApplicationStatus status,
             Pageable pageable) {
@@ -102,6 +113,8 @@ public class PlacementApplicationController {
      */
     @GetMapping("/company/{companyId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR')")
+    @Operation(summary = "Get getApplicationsByCompany")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<Page<ApplicationResponse>> getApplicationsByCompany(
             @PathVariable("companyId") Long companyId,
             @RequestParam(name = "status", required = false) ApplicationStatus status,
@@ -124,6 +137,8 @@ public class PlacementApplicationController {
      */
     @GetMapping("/student/{studentId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR')")
+    @Operation(summary = "Get  getApplicationsByStudent")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<Page<ApplicationResponse>> getApplicationsByStudent(
             @PathVariable("studentId") Long studentId,
             @RequestParam(name = "status", required = false) ApplicationStatus status,
@@ -145,6 +160,8 @@ public class PlacementApplicationController {
      */
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR')")
+    @Operation(summary = "Get getAllApplications")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<Page<ApplicationResponse>> getAllApplications(
             @RequestParam(name = "status", required = false) ApplicationStatus status,
             Pageable pageable) {
@@ -164,6 +181,8 @@ public class PlacementApplicationController {
      */
     @PutMapping("/{applicationId}/shortlist")
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR')")
+    @Operation(summary = "Put  shortlistApplication")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<ApplicationResponse> shortlistApplication(
             @PathVariable("applicationId") Long applicationId) {
         log.info("REST request to shortlist application ID: {}", applicationId);
@@ -181,6 +200,8 @@ public class PlacementApplicationController {
      * @return ResponseEntity with updated {@link ApplicationResponse} DTO
      */
     @PutMapping("/{applicationId}/reject")
+    @Operation(summary = "Put rejectApplication")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<ApplicationResponse> rejectApplication(
             @PathVariable("applicationId") Long applicationId) {
 
@@ -204,6 +225,8 @@ public class PlacementApplicationController {
      */
     @PutMapping("/{applicationId}/select")
     @PreAuthorize("hasAnyRole('ADMIN', 'COORDINATOR')")
+    @Operation(summary = "Put selectApplication")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<ApplicationResponse> selectApplication(
             @PathVariable("applicationId") Long applicationId) {
         log.info("REST request to select application ID: {}", applicationId);
